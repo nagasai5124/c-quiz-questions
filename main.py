@@ -145,6 +145,10 @@ if "score" not in st.session_state:
     st.session_state.score = 0
 if "answers" not in st.session_state:
     st.session_state.answers = {}
+if "submitted" not in st.session_state:
+    st.session_state.submitted = False
+if "selected_answer" not in st.session_state:
+    st.session_state.selected_answer = None
 
 # ================================
 # 🔁 Reset Function
@@ -153,44 +157,151 @@ def reset_quiz():
     st.session_state.current_q = 0
     st.session_state.score = 0
     st.session_state.answers = {}
+    st.session_state.submitted = False
+    st.session_state.selected_answer = None
+
+def next_question():
+    st.session_state.current_q += 1
+    st.session_state.submitted = False
+    st.session_state.selected_answer = None
 
 # ================================
 # 🧠 Quiz Logic
 # ================================
 st.title("💡 Interactive C++ Quiz")
-st.write("Answer each question carefully. After submission, you'll see the correct answer and explanation.")
+st.write("Test your C++ knowledge! Answer each question and learn from detailed explanations.")
+st.divider()
 
 if st.session_state.current_q < len(data):
     q = data[st.session_state.current_q]
-    st.subheader(f"Question {st.session_state.current_q + 1} of {len(data)}")
-    st.markdown(f"**{q['question']}**")
-
-    selected = st.radio("Choose your answer:", q["options"], key=f"q{st.session_state.current_q}")
-
-    if st.button("Submit", key=f"submit{st.session_state.current_q}"):
+    
+    # Progress indicator
+    progress = (st.session_state.current_q) / len(data)
+    st.progress(progress)
+    st.write(f"**Question {st.session_state.current_q + 1} of {len(data)}** | Score: {st.session_state.score}/{st.session_state.current_q}")
+    
+    st.markdown("---")
+    st.markdown(f"### {q['question']}")
+    
+    # Display options
+    if not st.session_state.submitted:
+        selected = st.radio(
+            "Select your answer:",
+            q["options"],
+            key=f"q{st.session_state.current_q}",
+            index=None
+        )
+        
+        col1, col2, col3 = st.columns([1, 1, 4])
+        with col1:
+            if st.button("✓ Submit Answer", type="primary", disabled=(selected is None)):
+                st.session_state.selected_answer = selected
+                st.session_state.submitted = True
+                st.session_state.answers[st.session_state.current_q] = selected
+                
+                if selected == q["answer"]:
+                    st.session_state.score += 1
+                st.rerun()
+    else:
+        # Show result after submission
+        selected = st.session_state.selected_answer
         correct = q["answer"]
-        st.session_state.answers[st.session_state.current_q] = selected
-
+        
+        # Display all options with visual feedback
+        for option in q["options"]:
+            if option == correct:
+                st.success(f"✅ {option} (Correct Answer)")
+            elif option == selected and option != correct:
+                st.error(f"❌ {option} (Your Answer)")
+            else:
+                st.write(f"⚪ {option}")
+        
+        st.markdown("---")
+        
+        # Show result
         if selected == correct:
-            st.success(f"✅ Correct! The answer is: {correct}")
-            st.session_state.score += 1
+            st.success("🎉 **Correct!** Well done!")
         else:
-            st.error(f"❌ Incorrect! The correct answer is: {correct}")
-
-        st.info(f"💡 Explanation: {q['explanation']}")
-        st.session_state.current_q += 1
-        st.rerun()
+            st.error(f"❌ **Incorrect!** The correct answer is: **{correct}**")
+        
+        # Show explanation
+        st.info(f"**💡 Explanation:** {q['explanation']}")
+        
+        st.markdown("---")
+        
+        # Next button
+        col1, col2, col3 = st.columns([1, 1, 4])
+        with col1:
+            if st.session_state.current_q < len(data) - 1:
+                if st.button("Next Question →", type="primary"):
+                    next_question()
+                    st.rerun()
+            else:
+                if st.button("View Results →", type="primary"):
+                    next_question()
+                    st.rerun()
 
 else:
-    st.success("🎉 Quiz Completed!")
+    # Quiz completed - show results
+    st.success("🎉 **Quiz Completed!**")
+    st.markdown("---")
+    
     total = len(data)
     score = st.session_state.score
-    st.write(f"Your final score: **{score}/{total}**")
+    percentage = (score / total) * 100
+    
+    # Display score with visual feedback
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Your Score", f"{score}/{total}")
+    with col2:
+        st.metric("Percentage", f"{percentage:.1f}%")
+    with col3:
+        if percentage >= 80:
+            grade = "A - Excellent! 🌟"
+        elif percentage >= 60:
+            grade = "B - Good Job! 👍"
+        elif percentage >= 40:
+            grade = "C - Keep Learning! 📚"
+        else:
+            grade = "D - Practice More! 💪"
+        st.metric("Grade", grade)
+    
     st.progress(score / total)
-
-    if score == total:
+    
+    # Performance message
+    st.markdown("---")
+    if percentage == 100:
         st.balloons()
-
-    if st.button("Restart Quiz"):
-        reset_quiz()
-        st.rerun()
+        st.success("🏆 **Perfect Score!** You're a C++ master!")
+    elif percentage >= 80:
+        st.success("🌟 **Excellent work!** You have a strong grasp of C++ concepts.")
+    elif percentage >= 60:
+        st.info("👍 **Good job!** Keep practicing to improve further.")
+    elif percentage >= 40:
+        st.warning("📚 **Keep learning!** Review the concepts and try again.")
+    else:
+        st.warning("💪 **Don't give up!** Practice makes perfect. Review the material and retry.")
+    
+    # Show detailed results
+    st.markdown("---")
+    st.subheader("📊 Detailed Results")
+    
+    for i, q in enumerate(data):
+        user_answer = st.session_state.answers.get(i, "Not answered")
+        correct_answer = q["answer"]
+        is_correct = user_answer == correct_answer
+        
+        with st.expander(f"Question {i+1}: {'✅' if is_correct else '❌'}"):
+            st.markdown(f"**{q['question']}**")
+            st.write(f"**Your answer:** {user_answer}")
+            st.write(f"**Correct answer:** {correct_answer}")
+            st.info(f"**Explanation:** {q['explanation']}")
+    
+    # Restart button
+    st.markdown("---")
+    col1, col2, col3 = st.columns([1, 1, 3])
+    with col1:
+        if st.button("🔄 Restart Quiz", type="primary"):
+            reset_quiz()
+            st.rerun()
