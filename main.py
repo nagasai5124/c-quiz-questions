@@ -5,7 +5,13 @@ import streamlit as st
 # ================================
 data = [
     {
-        "question": "1. What will be the output of the following code?\n\n#include <iostream>\nusing namespace std;\nint main() {\n    char c = 65;\n    cout << c;\n    return 0;\n}",
+        "question": """1. What will be the output of the following code?\n\n
+        #include <iostream>\nusing namespace std;\n
+        int main() 
+        {\n    
+        char c = 65;\n
+        cout << c;\n    
+        return 0;\n}""",
         "options": ["65", "A", "a", "Compilation Error"],
         "answer": "A",
         "explanation": "ASCII value 65 corresponds to 'A', so the output is 'A'."
@@ -23,19 +29,33 @@ data = [
         "explanation": "A bool is typically stored in 1 byte of memory, though only one bit is used logically."
     },
     {
-        "question": "4. What will be the value of x after execution?\n\nint x = 10;\n{\n    int x = 20;\n}\nx += 5;",
+        "question": """4. What will be the value of x after execution?\n\n
+        int x = 10;\n
+        {\n int x = 20;\n}\n
+        x += 5;""",
         "options": ["10", "15", "20", "25"],
         "answer": "15",
         "explanation": "The inner x is destroyed after its scope ends. Outer x = 10, then x += 5 gives 15."
     },
     {
-        "question": "5. What happens if you try to modify a const variable?\n\n#include <iostream>\nusing namespace std;\nint main() {\n    const int x = 10;\n    int *ptr = (int*)&x;\n    *ptr = 20;\n    cout << x << ' ' << *ptr;\n}",
+        "question": """5. What happens if you try to modify a const variable?\n\n
+        #include <iostream>\nusing namespace std;\n
+        int main() 
+        {\n    const int x = 10;\n
+        int *ptr = (int*)&x;\n 
+        *ptr = 20;\n    
+        cout << x << ' ' << *ptr;\n}""",
         "options": ["10 10", "10 20", "20 20", "Undefined Behavior"],
         "answer": "Undefined Behavior",
         "explanation": "Modifying a const variable through a pointer violates const correctness, leading to undefined behavior."
     },
     {
-        "question": "6. What is the output of:\n\n#include <iostream>\nusing namespace std;\nint main() {\n    int a = 5, b = 2;\n    cout << a / b;\n    return 0;\n}",
+        "question": """6. What is the output of:\n\n
+        #include <iostream>\nusing namespace std;\n
+        int main() 
+        {\n    int a = 5, b = 2;\n
+        cout << a / b;\n
+        return 0;\n}""",
         "options": ["2.5", "2", "2.0", "Error"],
         "answer": "2",
         "explanation": "Both operands are integers, so integer division is used. 5/2 = 2."
@@ -70,7 +90,12 @@ data = [
         "explanation": "Function overloading means same name but different parameter list."
     },
     {
-        "question": "11. What will be the output?\n\n#include <iostream>\nusing namespace std;\nint main(){\n    int a = 5;\n    cout << ++a << ' ' << a++;\n    return 0;\n}",
+        "question": """11. What will be the output?\n\n
+        #include <iostream>\nusing namespace std;\n
+        int main()
+        {\n    int a = 5;\n
+        cout << ++a << ' ' << a++;\n
+        return 0;\n}""",
         "options": ["6 6", "5 5", "6 5", "5 6"],
         "answer": "6 6",
         "explanation": "++a increments before printing (6), then a++ prints 6 before incrementing."
@@ -82,7 +107,9 @@ data = [
         "explanation": "By default, if return type is not specified, it is considered as int (in older C++, but now it's mandatory)."
     },
     {
-        "question": "13. What will be printed?\n\nint x = 5;\ncout << (x == 5 ? 10 : 20);",
+        "question": """13. What will be printed?\n\n
+        int x = 5;\n
+        cout << (x == 5 ? 10 : 20);""",
         "options": ["5", "10", "20", "Error"],
         "answer": "10",
         "explanation": "Ternary operator returns 10 because x == 5 is true."
@@ -99,7 +126,9 @@ data = [
         "explanation": "The 'new' keyword allocates memory on the heap dynamically."
     },
     {
-        "question": "15. What will be the output of:\n\nint arr[5] = {1,2,3,4,5};\ncout << *(arr + 3);",
+        "question": """15. What will be the output of:\n\n
+        int arr[5] = {1,2,3,4,5};\n
+        cout << *(arr + 3);""",
         "options": ["3", "4", "2", "5"],
         "answer": "4",
         "explanation": "*(arr + 3) accesses the 4th element (index 3)."
@@ -123,7 +152,11 @@ data = [
         "explanation": "Pointer declaration syntax: type *pointerName;"
     },
     {
-        "question": "19. What is the output?\n\nint x = 10;\nint &ref = x;\nref = 20;\ncout << x;",
+        "question": """19. What is the output?\n\n
+        int x = 10;\n
+        int &ref = x;\n
+        ref = 20;\n
+        cout << x;""",
         "options": ["10", "20", "0", "Error"],
         "answer": "20",
         "explanation": "ref is a reference to x, so modifying ref also changes x."
